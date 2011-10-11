@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     # url(r'^shylock/', include('shylock.foo.urls')),
     url(r'^shylock/$', 'shylock.tabs.views.index'),
     url(r'^shylock/addTab*', 'shylock.tabs.views.addTabCall'),
-    
+    url(r'^shylock/create*', 'shylock.tabs.views.createAccount'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

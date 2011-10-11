@@ -12,3 +12,8 @@ class Tab(models.Model):
     tabbee_id = models.IntegerField()
     amount = models.IntegerField()
     date_tabbed = models.DateTimeField('date tabbed')
+
+class Purchasable(models.Model):
+    name = models.CharField(max_length=200)
+    cost = models.FloatField()
+    

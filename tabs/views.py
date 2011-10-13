@@ -51,7 +51,6 @@ def addTabCall(request):
             message = client.sms.messages.create(to="+" + fromNumber, from_=TWILIONUMBER, body="Hooray, I have made you an account. Enjoy!")
         return HttpResponse("Yay")
     userToFind = textDict.get('user')
-    print textDict.get('user')
     if userToFind == None:
         # If the tab user doens't exist, we should probably bail out, so I'm okay with this failing
         userToFind = "tab"
@@ -64,13 +63,13 @@ def addTabCall(request):
         thisUser = possibleUsers[0]
         tab = thisUser.currentTab
         if textDict.get('command') == "help":
-            getString = "USAGE: [command] [item1, item2] [number]. Commands are: "
+            getString = "USAGE: [command] [item1, item2...(where items are normal items to purchase, i.e., skittles)] [number(cash to be debited)]. Commands are: " + "\n"
             for commandKey in commandDict:
                 if not commandKey == "help":
                     getString += commandKey
                     getString +=":"
                     getString += commandDict[commandKey]
-                    getString += ","
+                    getString += "\n"
             
             if thisUser.text_preference:
                 if len(getString) > 160:
@@ -105,8 +104,6 @@ def addTabCall(request):
         costs = textDict.get('cash')
         if not costs == None:
             thisTab = Tab(tabber_name=thisUser.name, tabbee_name = otherUser.name, date_tabbed = datetime.datetime.now(), item = "Straight Cash Yo", amount= costs)
-            otherUser.currentTab += -costs
-            otherUser.save()
             thisTab.save()
             thisCost += costs
         if textDict.get('command') == "user":

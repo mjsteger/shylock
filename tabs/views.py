@@ -5,10 +5,18 @@ from models import User, Tab, Purchasable
 import datetime
 import re
 
-ACCOUNTSID="AC39641c9c7a2c22a4cc79414bfd689958"
-AUTHTOKEN="07045575238001209df9aaf0dff7062c"
-TWILIONUMBER="+18189622782"
-client = TwilioRestClient(ACCOUNTSID, AUTHTOKEN)
+PATH_TO_PROJECT = "/var/www/html/shylock/"
+
+# Read in Twilio Info
+twilioDictionary = {}
+twilioInformation = open(PATH_TO_PROJECT + "tabs/" + "twilioInfo", "r")
+readInformation = twilioInformation.readlines()
+for information in readInformation:
+    key, value = information.split("=")
+    twilioDictionary[key] = value.strip()
+TWILIONUMBER = twilioDictionary['TWILIONUMBER']
+
+client = TwilioRestClient(twilioDictionary['ACCOUNTSID'], twilioDictionary['AUTHTOKEN'])
 
 commandDict = {"price":"Gives price without charging", "create":"Used to created an account", "help":"helps", "balance":"return currentTab", "getusers": "returns all users", "user" : "given a user, tabs them"}
 
@@ -51,15 +59,16 @@ def addTabCall(request):
             message = client.sms.messages.create(to="+" + fromNumber, from_=TWILIONUMBER, body="Hooray, I have made you an account. Enjoy!")
         return HttpResponse("Yay")
     userToFind = textDict.get('user')
-    if userToFind == None:
-        # If the tab user doens't exist, we should probably bail out, so I'm okay with this failing
-        userToFind = "tab"
-    otherUser = [user for user in User.objects.all() if user.name == userToFind.rstrip().lstrip()][0]
     if len(possibleUsers) == 0:
         message = client.sms.messages.create(to="+" + fromNumber, from_=TWILIONUMBER, body=
                                              "Hey, I see that you are not in our system. Text back the following to add yourself: \'create $YOUR_NAME, $WHETHER_YOU_WANT_TEXT{true, false}, $YOUR_TAB\'")
         return HttpResponse("This is not a valid user ")
     else:
+        if userToFind == None:
+            # If the tab user doens't exist, we should probably bail out, so I'm okay with this failing
+            userToFind = "tab"
+            otherUser = [user for user in User.objects.all() if user.name == userToFind.rstrip().lstrip()][0]
+    
         thisUser = possibleUsers[0]
         tab = thisUser.currentTab
         if textDict.get('command') == "help":

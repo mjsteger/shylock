@@ -35,7 +35,7 @@ def createAccount(request):
     u.save()
     return HttpResponse()
 
-def addTabCall(request):
+def takeText(request):
     textBody = request.REQUEST['Body']
     fromNumber = request.REQUEST['From']
     if fromNumber[0] == "+":
@@ -68,7 +68,7 @@ def addTabCall(request):
             # If the tab user doens't exist, we should probably bail out, so I'm okay with this failing
             userToFind = "tab"
             otherUser = [user for user in User.objects.all() if user.name == userToFind.rstrip().lstrip()][0]
-    
+
         thisUser = possibleUsers[0]
         tab = thisUser.currentTab
         if textDict.get('command') == "help":
@@ -79,7 +79,7 @@ def addTabCall(request):
                     getString +=":"
                     getString += commandDict[commandKey]
                     getString += "\n"
-            
+
             if thisUser.text_preference:
                 if len(getString) > 160:
                     currentPosition = 0
